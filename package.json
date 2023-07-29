@@ -1,0 +1,11 @@
+{
+  "name": "roi-editor",
+  "version": "1.0.0",
+  "description": "HTML canvas element for drawing bounding boxes and lines",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Haziq Suhaimi",
+  "license": "ISC"
+}
