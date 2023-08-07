@@ -175,4 +175,4 @@ class Line {
   }
 }
 
-module.export = Line;
+module.exports = Line;

@@ -4,8 +4,13 @@
   "description": "HTML canvas element for drawing bounding boxes and lines",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node ./dev-watcher.js",
+    "build": "browserify ./index.js > ./dist/index.js"
   },
   "author": "Haziq Suhaimi",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "node-watch": "^0.7.4"
+  }
 }

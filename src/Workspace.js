@@ -1,3 +1,5 @@
+const { x, check, reset, done, cog } = require("./icons");
+
 const renderDrawCanvas = () => {
   const drawCanvas = document.createElement("canvas");
   drawCanvas.id = "canvas2";
@@ -203,10 +205,9 @@ const init = () => {
       "flex-column",
       "position-relative"
     );
-    
   } catch (e) {
-    prompt(e);
+    confirm(e);
   }
 };
 
-module.export = init;
+module.exports = init;

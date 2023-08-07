@@ -218,4 +218,4 @@ class Box {
   }
 }
 
-module.export = Box
+module.exports = Box
