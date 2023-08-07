@@ -410,10 +410,70 @@ module.exports = Line;
 },{}],4:[function(require,module,exports){
 const { x, check, reset, done, cog } = require("./icons");
 
-const renderDrawCanvas = () => {
+const renderDrawCanvas = (edWrapper) => {
   const drawCanvas = document.createElement("canvas");
   drawCanvas.id = "canvas2";
   drawCanvas.classList.add("position-absolute", "top-0", "z-2");
+  // drawCanvas.addEventListener("pointGrab", () => {
+  //   // activeTool = "edit";
+  //   // btnBox.classList.remove("active");
+  //   // btnLine.classList.remove("active");
+  // });
+  // drawCanvas.addEventListener("openMenu", function ({ detail }) {
+  //   menu.classList.add("show");
+  //   menu.style.top = `${detail.top}px`;
+  //   menu.style.left = `${detail.left}px`;
+  //   menu.ownerData = detail.ownerData;
+  // });
+  // drawCanvas.addEventListener("elementMove", function () {
+  //   activeTool = "move";
+  //   btnBox.classList.remove("active");
+  //   btnLine.classList.remove("active");
+  // });
+  drawCanvas.addEventListener("mousedown", (evt) => {
+    edWrapper.dispatchEvent(
+      new CustomEvent("draw-canvas", {
+        detail: { evt, id: drawCanvas.id, event: "mousedown" },
+      })
+    );
+  });
+  drawCanvas.addEventListener("contextmenu", (evt) => {
+    edWrapper.dispatchEvent(
+      new CustomEvent("draw-canvas", {
+        detail: { evt, id: drawCanvas.id, event: "contextmenu" },
+      })
+    );
+  });
+  drawCanvas.addEventListener("mouseup", (evt) => {
+    edWrapper.dispatchEvent(
+      new CustomEvent("draw-canvas", {
+        detail: { evt, id: drawCanvas.id, event: "mouseup" },
+      })
+    );
+  });
+  drawCanvas.addEventListener("mousemove", (evt) => {
+    edWrapper.dispatchEvent(
+      new CustomEvent("draw-canvas", {
+        detail: { evt, id: drawCanvas.id, event: "mousemove" },
+      })
+    );
+  });
+  drawCanvas.addEventListener("mouseenter", (evt) => {
+    edWrapper.dispatchEvent(
+      new CustomEvent("draw-canvas", {
+        detail: { evt, id: drawCanvas.id, event: "mouseenter" },
+      })
+    );
+  });
+  window.addEventListener("click", (evt) => {
+    if (evt.target.contains(drawCanvas) && evt.target !== drawCanvas) {
+      edWrapper.dispatchEvent(
+        new CustomEvent("draw-canvas", {
+          detail: { evt, id: drawCanvas.id, event: "click-outside" },
+        })
+      );
+    }
+  });
   return drawCanvas;
 };
 
@@ -442,7 +502,7 @@ const menuItems = [
   { id: "menu-delete", name: "Delete", additionalClasslist: ["text-danger"] },
 ];
 
-const renderMenu = () => {
+const renderMenu = (edWrapper) => {
   const menu = document.createElement("div");
   menu.id = "menu";
   menu.classList.add("dropdown-menu", "position-absolute", "z-3");
@@ -456,6 +516,13 @@ const renderMenu = () => {
       additionalClasslist.forEach((cls) => {
         a.classList.add(cls);
       });
+    a.addEventListener("click", (evt) => {
+      edWrapper.dispatchEvent(
+        new CustomEvent("menu-items-click", {
+          detail: { evt, id, event: "click" },
+        })
+      );
+    });
     menu.appendChild(a);
   });
   return menu;
@@ -512,7 +579,7 @@ const toolBtnGroups = [
         id: "editor-btn-box",
         type: "button",
         class: ["btn", "btn-outline-primary"],
-        innerHtml: "Box",
+        innerHTML: "Box",
         style: "",
       },
       {
@@ -520,7 +587,7 @@ const toolBtnGroups = [
         id: "editor-btn-line",
         type: "button",
         class: ["btn", "btn-outline-primary", "disabled"],
-        innerHtml: "Line",
+        innerHTML: "Line",
         style: "",
       },
     ],
@@ -534,7 +601,7 @@ const toolBtnGroups = [
         type: "button",
         class: ["btn", "btn-outline-danger", "rounded-circle", "p-0", "pb-1"],
         style: "height: 40px; width: 40px",
-        innerHtml: reset,
+        innerHTML: reset,
       },
     ],
   },
@@ -547,7 +614,7 @@ const toolBtnGroups = [
         type: "button",
         class: ["btn", "btn-outline-success", "rounded-circle", "p-0", "pb-1"],
         style: "height: 40px; width: 40px",
-        innerHtml: done,
+        innerHTML: done,
       },
     ],
   },
@@ -567,13 +634,13 @@ const toolBtnGroups = [
         ],
         type: "button",
         style: "width: 40px; height: 40px; transition: all 0.5s ease",
-        innerHtml: cog,
+        innerHTML: cog,
       },
     ],
   },
 ];
 
-const renderToolbar = () => {
+const renderToolbar = (edWrapper) => {
   const toolbar = document.createElement("div");
   toolbar.classList.add(
     "position-relative",
@@ -598,6 +665,13 @@ const renderToolbar = () => {
         classList.forEach((cls) => {
           btn.classList.add(cls);
         });
+      btn.addEventListener("click", (evt) => {
+        edWrapper.dispatchEvent(
+          new CustomEvent("toolbar-btn-click", {
+            detail: { evt, id: props.id, event: "click" },
+          })
+        );
+      });
       wrapper.appendChild(btn);
     });
     toolbar.appendChild(wrapper);
@@ -615,6 +689,39 @@ const init = () => {
       "flex-column",
       "position-relative"
     );
+    const drawCanvas = renderDrawCanvas(editor);
+    const imgCanvas = renderImgCanvas();
+    const menu = renderMenu(editor);
+    const labelInput = renderLabelInput();
+    const toolbar = renderToolbar(editor);
+    editor.appendChild(imgCanvas);
+    editor.appendChild(drawCanvas);
+    editor.appendChild(menu);
+    editor.appendChild(labelInput);
+    editor.appendChild(toolbar);
+
+    const baseImage = new Image();
+    baseImage.src = editor.dataset.imgSrc;
+    baseImage.onload = () => {
+      const resizeCoof = editor.clientWidth / baseImage.width;
+      imgCanvas.width = editor.clientWidth;
+      imgCanvas.height = baseImage.height * resizeCoof;
+      drawCanvas.width = imgCanvas.width;
+      drawCanvas.height = imgCanvas.height;
+      imgCanvas
+        .getContext("2d")
+        .drawImage(baseImage, 0, 0, imgCanvas.width, imgCanvas.height);
+    };
+
+    editor.addEventListener("toolbar-btn-click", ({ detail }) => {
+      console.log("toolbar-btn-click", detail);
+    });
+    editor.addEventListener("menu-items-click", ({ detail }) => {
+      console.log("menu-items-click", detail);
+    });
+    editor.addEventListener("draw-canvas", ({ detail }) => {
+      console.log("draw-canvas", detail);
+    });
   } catch (e) {
     confirm(e);
   }
