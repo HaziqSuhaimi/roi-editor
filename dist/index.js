@@ -21,6 +21,7 @@ const {
   menuLabel,
   menuItemBtns,
   menuLabelInput,
+  settingDrawer,
 } = Workspace(editor, ({ resizeCoof: coof, imgDimension: iDim }) => {
   resizeCoof = coof;
   imgDimension = iDim;
@@ -156,11 +157,14 @@ editor.addEventListener("toolbar-btn-click", ({ detail }) => {
       );
       break;
     case "open-setting-btn":
-      openSettingBtn.style.transform = !openSettingBtn.isOpen
-        ? "rotateZ(180deg)"
-        : "rotateZ(0deg)";
-      openSettingBtn.isOpen = !openSettingBtn.isOpen;
-      //customevent to editor
+      if (!settingDrawer.isOpen) {
+        settingDrawer.style.height = `${drawCanvas.height * 0.9}px`;
+        openSettingBtn.style.transform = "rotateZ(180deg)";
+      } else {
+        settingDrawer.style.height = 0;
+        openSettingBtn.style.transform = "rotateZ(0deg)";
+      }
+      settingDrawer.isOpen = !settingDrawer.isOpen;
       break;
   }
 });
@@ -228,35 +232,50 @@ editor.addEventListener("menu-items-click", ({ detail }) => {
   }
 });
 editor.addEventListener("draw-canvas", ({ detail }) => {
-  //   console.log("draw-canvas", detail.event);
-  if (detail.event === "mousedown") {
-    if (detail.evt.button === 0) {
+  switch (detail.event) {
+    case "mousedown":
+      if (detail.evt.button === 0) {
+        mousePos = {
+          ...getCursorPosition(mousePos, drawCanvas, detail.evt, "mousedown"),
+          isDown: true,
+        };
+      }
+      if (detail.evt.button === 2) {
+        mousePos = getCursorPosition(
+          mousePos,
+          drawCanvas,
+          detail.evt,
+          "rightClick"
+        );
+      }
+      break;
+    case "contextmenu":
+      detail.evt.preventDefault();
+      break;
+    case "mouseup":
       mousePos = {
-        ...getCursorPosition(mousePos, drawCanvas, detail.evt, "mousedown"),
-        isDown: true,
+        ...getCursorPosition(mousePos, drawCanvas, detail.evt, "mouseup"),
+        isDown: false,
       };
-    }
-    if (detail.evt.button === 2) {
+      break;
+    case "mousemove":
       mousePos = getCursorPosition(
         mousePos,
         drawCanvas,
         detail.evt,
-        "rightClick"
+        "mousemove"
       );
-    }
-  } else if (detail.event === "contextmenu") {
-    detail.evt.preventDefault();
-  } else if (detail.event === "mouseup") {
-    mousePos = {
-      ...getCursorPosition(mousePos, drawCanvas, detail.evt, "mouseup"),
-      isDown: false,
-    };
-  } else if (detail.event === "mousemove") {
-    mousePos = getCursorPosition(mousePos, drawCanvas, detail.evt, "mousemove");
-  } else if (detail.event === "mouseenter") {
-    if (!activeTool) {
-      activeTool = "edit";
-    }
+      break;
+    case "mouseenter":
+      if (!activeTool) {
+        activeTool = "edit";
+      }
+      break;
+    case "clickoutside":
+      activeTool = null;
+      btnBox.classList.remove("active");
+      btnLine.classList.remove("active");
+      break;
   }
 });
 editor.addEventListener("menu-label-btn-click", ({ detail }) => {
@@ -294,6 +313,15 @@ drawCanvas.addEventListener("elementMove", () => {
   activeTool = "move";
   btnBox.classList.remove("active");
   btnLine.classList.remove("active");
+});
+
+window.addEventListener("click", (event) => {
+  if (
+    event.target.contains(openSettingBtn) &&
+    event.target !== openSettingBtn
+  ) {
+    settingDrawer.isOpen && openSettingBtn.click();
+  }
 });
 
 window.requestAnimationFrame(redraw);
@@ -734,7 +762,9 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
     const imgCanvas = renderImgCanvas();
     const { menu, menuItemBtns } = renderMenu(editor);
     const { menuLabel, menuLabelInput } = renderLabelInput(editor);
-    const { toolbar, toolbarBtns, menuLabelBtns } = renderToolbar(editor);
+    const { toolbar, toolbarBtns, menuLabelBtns, settingDrawer } =
+      renderToolbar(editor);
+
     editor.appendChild(imgCanvas);
     editor.appendChild(drawCanvas);
     editor.appendChild(menu);
@@ -752,6 +782,11 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
       imgCanvas
         .getContext("2d")
         .drawImage(baseImage, 0, 0, imgCanvas.width, imgCanvas.height);
+
+      settingDrawer.style.width = `${imgCanvas.width}px`;
+      settingDrawer.style.height = 0;
+      settingDrawer.isOpen = false;
+
       onImgLoaded({
         resizeCoof,
         imgDimension: {
@@ -768,6 +803,7 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
       menuItemBtns,
       menuLabelInput,
       menuLabelBtns,
+      settingDrawer,
     };
   } catch (e) {
     confirm(e);
@@ -783,22 +819,6 @@ const renderDrawCanvas = (edWrapper) => {
   const drawCanvas = document.createElement("canvas");
   drawCanvas.id = "canvas2";
   drawCanvas.classList.add("position-absolute", "top-0", "z-2");
-  // drawCanvas.addEventListener("pointGrab", () => {
-  //   // activeTool = "edit";
-  //   // btnBox.classList.remove("active");
-  //   // btnLine.classList.remove("active");
-  // });
-  // drawCanvas.addEventListener("openMenu", function ({ detail }) {
-  //   menu.classList.add("show");
-  //   menu.style.top = `${detail.top}px`;
-  //   menu.style.left = `${detail.left}px`;
-  //   menu.ownerData = detail.ownerData;
-  // });
-  // drawCanvas.addEventListener("elementMove", function () {
-  //   activeTool = "move";
-  //   btnBox.classList.remove("active");
-  //   btnLine.classList.remove("active");
-  // });
   drawCanvas.addEventListener("mousedown", (evt) => {
     edWrapper.dispatchEvent(
       new CustomEvent("draw-canvas", {
@@ -838,7 +858,7 @@ const renderDrawCanvas = (edWrapper) => {
     if (evt.target.contains(drawCanvas) && evt.target !== drawCanvas) {
       edWrapper.dispatchEvent(
         new CustomEvent("draw-canvas", {
-          detail: { evt, id: drawCanvas.id, event: "click-outside" },
+          detail: { evt, id: drawCanvas.id, event: "clickoutside" },
         })
       );
     }
@@ -1066,7 +1086,20 @@ const renderToolbar = (edWrapper) => {
     });
     toolbar.appendChild(wrapper);
   });
-  return { toolbar, toolbarBtns };
+  const settingDrawer =
+    document.getElementById("sidebar-drawer") || document.createElement("div");
+  settingDrawer.id = "sidebar-drawer";
+  settingDrawer.classList.add(
+    "overflow-hidden",
+    "bg-light",
+    "border-primary",
+    "border-bottom",
+    "position-absolute",
+    "bottom-100"
+  );
+  settingDrawer.style.transition = "all 0.5s ease";
+  toolbar.appendChild(settingDrawer);
+  return { toolbar, toolbarBtns, settingDrawer };
 };
 
 module.exports = {

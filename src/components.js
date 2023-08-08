@@ -4,22 +4,6 @@ const renderDrawCanvas = (edWrapper) => {
   const drawCanvas = document.createElement("canvas");
   drawCanvas.id = "canvas2";
   drawCanvas.classList.add("position-absolute", "top-0", "z-2");
-  // drawCanvas.addEventListener("pointGrab", () => {
-  //   // activeTool = "edit";
-  //   // btnBox.classList.remove("active");
-  //   // btnLine.classList.remove("active");
-  // });
-  // drawCanvas.addEventListener("openMenu", function ({ detail }) {
-  //   menu.classList.add("show");
-  //   menu.style.top = `${detail.top}px`;
-  //   menu.style.left = `${detail.left}px`;
-  //   menu.ownerData = detail.ownerData;
-  // });
-  // drawCanvas.addEventListener("elementMove", function () {
-  //   activeTool = "move";
-  //   btnBox.classList.remove("active");
-  //   btnLine.classList.remove("active");
-  // });
   drawCanvas.addEventListener("mousedown", (evt) => {
     edWrapper.dispatchEvent(
       new CustomEvent("draw-canvas", {
@@ -59,7 +43,7 @@ const renderDrawCanvas = (edWrapper) => {
     if (evt.target.contains(drawCanvas) && evt.target !== drawCanvas) {
       edWrapper.dispatchEvent(
         new CustomEvent("draw-canvas", {
-          detail: { evt, id: drawCanvas.id, event: "click-outside" },
+          detail: { evt, id: drawCanvas.id, event: "clickoutside" },
         })
       );
     }
@@ -287,7 +271,20 @@ const renderToolbar = (edWrapper) => {
     });
     toolbar.appendChild(wrapper);
   });
-  return { toolbar, toolbarBtns };
+  const settingDrawer =
+    document.getElementById("sidebar-drawer") || document.createElement("div");
+  settingDrawer.id = "sidebar-drawer";
+  settingDrawer.classList.add(
+    "overflow-hidden",
+    "bg-light",
+    "border-primary",
+    "border-bottom",
+    "position-absolute",
+    "bottom-100"
+  );
+  settingDrawer.style.transition = "all 0.5s ease";
+  toolbar.appendChild(settingDrawer);
+  return { toolbar, toolbarBtns, settingDrawer };
 };
 
 module.exports = {

@@ -11,7 +11,88 @@
       style="width: 80%"
       data-img-src="../static/images/test.avif"
       id="editor-container"
-    ></div>
+    >
+  <div id="sidebar-drawer">
+    <form style="overflow-y: auto" class="h-100 p-3">
+      <h5>Configuration</h5>
+      <div class="form-group">
+        <label for="videoStream">Video Stream URL</label>
+        <input
+          type="text"
+          class="form-control"
+          id="videoStream"
+          value="rtsp://121.123.251.139/full1080p"
+        />
+        <small class="form-text text-muted"
+          >Support RTSP and local video file path</small
+        >
+      </div>
+      <div class="row">
+        <div class="col-12 col-lg-6 form-group">
+          <label for="enterBuffer">Enter Buffer</label>
+          <input
+            type="number"
+            min="0"
+            class="form-control"
+            id="enterBuffer"
+            value="25"
+          />
+          <small class="form-text text-muted"
+            >Detection buffer upon entering ROI</small
+          >
+        </div>
+        <div class="col-12 col-lg-6 form-group">
+          <label for="exitTimeout">Exit Buffer</label>
+          <input
+            type="number"
+            min="0"
+            class="form-control"
+            id="exitTimeout"
+            value="3"
+          />
+          <small class="form-text text-muted"
+            >Detection buffer upon exiting ROI</small
+          >
+        </div>
+        <div class="col-12 col-lg-6 form-group">
+          <label for="triggerArea">Trigger Area</label>
+          <input
+            type="number"
+            class="form-control"
+            id="triggerArea"
+            min="0"
+            max="100"
+            value="50"
+          />
+          <small class="form-text text-muted"
+            >Detection trigger area percentage</small
+          >
+        </div>
+        <div class="col-12 col-lg-6 form-group">
+          <label for="skipFrame">Skip Frame</label>
+          <input
+            type="number"
+            min="0"
+            class="form-control"
+            id="skipFrame"
+            value="5"
+          />
+          <small class="form-text text-muted">Number of frame skip</small>
+        </div>
+        <div class="col-12 col-lg-6 form-group">
+          <label for="waitTime">Wait Time</label>
+          <input
+            type="number"
+            class="form-control"
+            id="waitTime"
+            min="0"
+            step="0.01"
+            value="0.02"
+          />
+          <small class="form-text text-muted">Waiting time</small>
+        </div>
+    </form>
+  </div>
   </body>
   <script src="../dist/index.js"></script>
 </html>

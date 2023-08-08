@@ -20,7 +20,9 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
     const imgCanvas = renderImgCanvas();
     const { menu, menuItemBtns } = renderMenu(editor);
     const { menuLabel, menuLabelInput } = renderLabelInput(editor);
-    const { toolbar, toolbarBtns, menuLabelBtns } = renderToolbar(editor);
+    const { toolbar, toolbarBtns, menuLabelBtns, settingDrawer } =
+      renderToolbar(editor);
+
     editor.appendChild(imgCanvas);
     editor.appendChild(drawCanvas);
     editor.appendChild(menu);
@@ -38,6 +40,11 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
       imgCanvas
         .getContext("2d")
         .drawImage(baseImage, 0, 0, imgCanvas.width, imgCanvas.height);
+
+      settingDrawer.style.width = `${imgCanvas.width}px`;
+      settingDrawer.style.height = 0;
+      settingDrawer.isOpen = false;
+
       onImgLoaded({
         resizeCoof,
         imgDimension: {
@@ -54,6 +61,7 @@ const Workspace = (editor, onImgLoaded = () => {}) => {
       menuItemBtns,
       menuLabelInput,
       menuLabelBtns,
+      settingDrawer,
     };
   } catch (e) {
     confirm(e);
