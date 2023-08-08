@@ -9,7 +9,7 @@ class Line {
     this.isHover = false;
     this.type = "line";
     this.isGrab = false;
-    this.id = generateClientId();
+    this.id = this.#generateClientId();
     this.isActive = false;
     this.label = { value: "" };
     this.bbox = {
@@ -20,6 +20,11 @@ class Line {
         y: this.p1.y + Math.abs(this.p1.y - this.p2.y) / 2,
       },
     };
+  }
+
+  #generateClientId() {
+    const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+    return uint32.toString(16);
   }
 
   #drawLinePoint({ x, y, isGrab }, { color, size } = {}) {

@@ -39,7 +39,7 @@ class Box {
     this.isHover = false;
     this.type = "box";
     this.isGrab = false;
-    this.id = generateClientId();
+    this.id = this.#generateClientId();
     this.isActive = false;
     this.label = { value: label };
     this.bbox = {
@@ -50,6 +50,11 @@ class Box {
         y: this.p1.y + Math.abs(this.p1.y - this.p3.y) / 2,
       },
     };
+  }
+
+  #generateClientId() {
+    const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+    return uint32.toString(16);
   }
 
   #drawLinePoint({ x, y, isGrab }, { color, size } = {}) {
@@ -218,4 +223,4 @@ class Box {
   }
 }
 
-module.exports = Box
+module.exports = Box;
