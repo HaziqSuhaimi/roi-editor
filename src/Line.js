@@ -5,7 +5,7 @@ class Line {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.strokeStyle = "yellow";
-    this.fillStyle = "goldenrod ";
+    this.fillStyle = "goldenrod";
     this.isHover = false;
     this.type = "line";
     this.isGrab = false;

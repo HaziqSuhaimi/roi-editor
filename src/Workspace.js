@@ -5,6 +5,7 @@ const {
   renderLabelInput,
   renderToolbar,
 } = require("./components");
+require("./bootstrap.min.css");
 
 const Workspace = (editor, onImgLoaded = () => {}) => {
   try {
