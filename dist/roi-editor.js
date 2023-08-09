@@ -117,7 +117,7 @@ const redraw = () => {
       drawCanvasCtx.lineTo(mousePos.x, drawCanvas.height);
       drawCanvasCtx.stroke();
       drawCanvasCtx.fillText(
-        `${mousePos.x},${mousePos.y}`,
+        `${+mousePos.x.toFixed(2)},${+mousePos.y.toFixed(2)}`,
         mousePos.x + 5,
         mousePos.y - 5
       );
