@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node ./dev-watcher.js",
     "minify-build": "npm run build && uglifyjs --compress --mangle -- ./dist/roi-editor.js > ./dist/roi-editor.min.js",
-    "build": "browserify -t browserify-css ./index.js > ./dist/roi-editor.js"
+    "build": "browserify -t browserify-css ./index.js > ./dist/roi-editor.js",
+    "publish": "npm run build && npm run minify-build"
   },
   "author": "Haziq Suhaimi",
   "license": "ISC",

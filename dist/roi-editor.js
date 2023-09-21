@@ -4,11 +4,13 @@ const Line = require("./src/Line");
 const Workspace = require("./src/Workspace");
 const { getCursorPosition } = require("./src/utils");
 
+window.ROI_EDITOR = { Box, Line };
+
 let resizeCoof = 1;
 let imgDimension = {};
 let activeTool = null;
 let selectedElem = null;
-const boxes = [];
+const boxes = window.localStorage.getItem("PREBOXES") || [];
 const lines = [];
 let visualizerBox = null;
 let mousePos = { x: 0, y: 0, state: null, isDown: false };
