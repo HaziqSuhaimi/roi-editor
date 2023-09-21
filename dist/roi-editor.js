@@ -4,8 +4,6 @@ const Line = require("./src/Line");
 const Workspace = require("./src/Workspace");
 const { getCursorPosition } = require("./src/utils");
 
-window.ROI_EDITOR = { Box, Line };
-
 let resizeCoof = 1;
 let imgDimension = {};
 let activeTool = null;
@@ -327,6 +325,8 @@ window.addEventListener("click", (event) => {
 });
 
 window.requestAnimationFrame(redraw);
+
+window.ROI_EDITOR = { Box, Line, resizeCoof };
 
 },{"./src/Box":3,"./src/Line":4,"./src/Workspace":5,"./src/utils":9}],2:[function(require,module,exports){
 'use strict';
