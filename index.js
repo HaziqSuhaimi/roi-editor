@@ -3,6 +3,8 @@ const Line = require("./src/Line");
 const Workspace = require("./src/Workspace");
 const { getCursorPosition } = require("./src/utils");
 
+window.ROI_EDITOR = { Box, Line };
+
 let resizeCoof = 1;
 let imgDimension = {};
 let activeTool = null;
